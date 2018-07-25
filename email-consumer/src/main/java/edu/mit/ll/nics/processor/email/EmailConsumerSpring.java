@@ -189,8 +189,6 @@ public class EmailConsumerSpring implements Processor {
     }
 
     private String validateRecipients(String recipients){
-    	if (testJsonArray(recipients))
-            recipients = getRecipientsFromJson(recipients);
         Pattern pattern = Pattern.compile("^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
     	LOG.debug("Validating receipients: " + recipients);
     	StringBuffer validated = new StringBuffer();
@@ -277,13 +275,9 @@ public class EmailConsumerSpring implements Processor {
     private void sendMessage(Session session, MimeMessage msg) throws MessagingException
     {
         Transport transport = session.getTransport("smtps");
-//        transport.connect(smtpHost, Integer.valueOf(smtpPort), mailUsername, mailPassword);
         transport.connect(smtpHost, mailUsername, mailPassword);
         LOG.debug("Transport: "+transport.toString());
-        // TODO this is cause of duplicate emails, is this call more stable than Transport.send(msg)?
-//        transport.sendMessage(msg, msg.getAllRecipients());
-
-//        Transport.send(msg); // cause of duplicates
+        Transport.send(msg); // cause of duplicates
     }
 
     private void handleSimpleEmailMessage(String message)
